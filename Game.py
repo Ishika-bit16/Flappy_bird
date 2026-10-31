@@ -1,11 +1,17 @@
 import pygame as pg
 import sys
+from pathlib import Path
+from bird import Bird
+
+
+ROOT_DIR = Path(__file__).resolve().parent
 
 pg.init()
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, scale_factor):
+        self.scale_factor = scale_factor
         self.width = 560
         self.height = 725
 
@@ -15,15 +21,10 @@ class Game:
 
         self.clock = pg.time.Clock()
 
-        # Ground movement speed
+
         self.move_speed = 200
-
-        # -------------------------
-        # Background
-        # -------------------------
-
         bg = pg.image.load(
-            "images/Background.png"
+            str(ROOT_DIR / "images" / "Background.png")
         ).convert_alpha()
 
         bg = bg.subsurface(
@@ -34,23 +35,22 @@ class Game:
             bg,
             (self.width, self.height)
         )
+        self.bird = Bird(self.scale_factor)
 
-        # -------------------------
-        # Ground
-        # -------------------------
 
         self.ground()
 
-        # -------------------------
-        # Game Loop
-        # -------------------------
 
         self.gameloop()
 
     def ground(self):
         base = pg.image.load(
-            "images/base.png"
+            str(ROOT_DIR / "images" / "base.png")
         ).convert_alpha()
+        base = pg.transform.scale(
+            base,
+            (self.width, base.get_height())
+        )
 
         self.base = base
 
@@ -62,21 +62,16 @@ class Game:
             self.height - self.base_height
         )
 
-        # Single scrolling position
+
         self.ground_x = 0.0
 
     def gameloop(self):
         while True:
 
-            # -------------------------
-            # Delta Time
-            # -------------------------
 
             dt = self.clock.tick(60) / 1000
 
-            # -------------------------
-            # Events
-            # -------------------------
+
 
             for event in pg.event.get():
 
@@ -84,17 +79,10 @@ class Game:
                     pg.quit()
                     sys.exit()
 
-            # -------------------------
-            # Update
-            # -------------------------
 
             self.update(dt)
 
-            # -------------------------
-            # Render
-            # -------------------------
 
-            # Background
             self.win.blit(
                 self.bg_img,
                 (0, 0)
@@ -119,22 +107,20 @@ class Game:
                     self.base_y
                 )
             )
+            self.win.blit(self.bird.image, self.bird.rect)
 
-            # Display frame
             pg.display.flip()
 
     def update(self, dt):
 
-        # Move ground
+
         self.ground_x -= (
             self.move_speed * dt
         )
 
-        # Once one complete base has
-        # moved off-screen, reset the
-        # scrolling position.
         if self.ground_x <= -self.base_width:
             self.ground_x += self.base_width
 
 
-game = Game()
+if __name__ == "__main__":
+    game = Game(scale_factor=1.5)
