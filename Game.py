@@ -98,6 +98,9 @@ class Game:
             if not self.is_enter_pressed:
                 self.win.blit(self.welcome, (142, 79))
 
+            for current_pipe in self.pipes:
+                current_pipe.draw(self.win)
+
             # Ground - Base 1
             self.win.blit(
                 self.base,
@@ -114,8 +117,6 @@ class Game:
                     round(self.ground_x + self.base_width ),self.base_y
                 )
             )
-            for current_pipe in self.pipes:
-                current_pipe.draw(self.win)
 
             if self.is_enter_pressed:
                 self.win.blit(self.bird.image, self.bird.rect)
