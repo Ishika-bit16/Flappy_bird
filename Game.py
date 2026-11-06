@@ -144,12 +144,13 @@ class Game:
                 40
             )
 
-            high_score_width = self.score_board.width(self.high_score)
+            high_score_width = self.score_board.width(self.high_score, small=True)
             self.score_board.draw_score(
                 self.win,
                 self.high_score,
                 self.width - high_score_width - 15,
-                15
+                15,
+                small=True
             )
 
             pg.display.flip()
