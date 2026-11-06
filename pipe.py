@@ -37,6 +37,9 @@ class pipe:
         self.rect_top.x = round(self.x)
         self.rect_bottom.x = round(self.x)
 
+        # becomes True once the bird has passed this pipe (used for scoring)
+        self.passed = False
+
     def draw(self, win):
         win.blit(self.img_top, self.rect_top)
         win.blit(self.img_bottom, self.rect_bottom)

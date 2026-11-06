@@ -26,9 +26,10 @@ class Bird(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=(280, 350))
         self.y_position = float(self.rect.y)
         self.y_velocity = 0
-        self.gravity = 10
-        self.flap_speed = 200
+        self.gravity = 800
+        self.flap_speed = 300
         self.anim_counter = 0
+        self.animation_timer = 0.0
 
         self.outflap = pg.transform.scale_by(
             pg.image.load(
@@ -36,21 +37,32 @@ class Bird(pg.sprite.Sprite):
             ).convert_alpha(),
             scale_factor,
         )
+        self.gravity_ON = True
 
 
     def update(self,dt):
-        self.y_velocity += self.gravity * dt
-        self.y_position += self.y_velocity
+        if self.gravity_ON:
+            self.y_velocity += self.gravity * dt
+            self.y_position += self.y_velocity * dt
+        self.animation_timer += dt
+        if self.animation_timer >= 0.1:
+            self.image_index = 1 - self.image_index
+            self.animation_timer = 0.0
+            self.image = self.img_list[self.image_index]
         self.rect.y = round(self.y_position)
 
     def flap(self, dt):
-        self.y_velocity =-self.flap_speed*dt
+        self.y_velocity = -self.flap_speed
+        self.image_index = 0
+        self.image = self.img_list[self.image_index]
+        self.animation_timer = 0.0
+
+    def crash(self):
+        self.gravity_ON = False
+        self.image = self.outflap
 
     def playAnimation(self, event):
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_RETURN or event.key == pg.K_SPACE or event.key == pg.K_UP:
-                 self.image_index = 0
-        else:
-            self.image_index = 1    # up and down wings
-
-        self.image = self.img_list[self.image_index]
+            if event.key in (pg.K_RETURN, pg.K_SPACE, pg.K_UP):
+                self.image_index = 0
+                self.image = self.img_list[self.image_index]
